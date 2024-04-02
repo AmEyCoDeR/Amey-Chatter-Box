@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBox | Chatting | Chatting Application | An Amey Product</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/Amey Chatter Box Logo New.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <button class="myBtn2" onclick="document.getElementById('allfiles').style.display = 'block';" style="display: none;"><i
+            class="fa-solid fa-file" style="margin-left: 4.25px;margin-right: 4.25px; font-size: 18px;"></i></button>
+
+    <button onclick="bottomFunction();" class="myBtn"><i class="fa-solid fa-chevron-down"
+            style="margin-left: 3.33px;margin-right: 3.33px;"></i></button>
+    <style>
+        #message-messaging {
+            display: none;
+        }
+    </style>
+    <div class="usernamebox">
+        <input type="text" id="themessage" placeholder="Type Message...">
+        <div class="lopsym" style="margin-right: 0;" onclick="sendthemessage();"><i class="fa-solid fa-paper-plane"
+                style="margin-left: 4.25px;margin-right: 4.25px;"></i></div>
+    </div>
+    <div id="whoarechatting"></div>
+    <br>
+    <ul id="allmessages"></ul>
+    <div id="allfiles"><br><iframe src="/Amey Cloud/Storage/Uploadonly" width="320px" height="300px"
+            frameborder="0"></iframe>
+        <ul id="allfileso"></ul><button class="close"
+            onclick="document.getElementById('allfiles').style.display = 'none';"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="demo" style="display: none;">
+        <center>
+            <img src="/nonet.png" alt="No InterNet" width="320px">
+            <h1>You're Not Connected to Internet</h1>
+        </center>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-database.js"></script>
+    <script>
+        if (localStorage.getItem("login") === 'yes') {
+            console.log("myau");
+        }
+        else if (localStorage.getItem("ChattingName") === undefined || localStorage.getItem("ChattingName") === null || localStorage.getItem("ChattingName") === "" || localStorage.getItem("ChattingName") === "/") {
+            localStorage.removeItem("ChattingName");
+            window.open("/chats", "_self");
+        }
+        else {
+            localStorage.removeItem("ChattingName");
+            window.open("/chats", "_self");
+        }
+
+        if (localStorage.getItem("ChattingUsername") === undefined || localStorage.getItem("ChattingUsername") === null || localStorage.getItem("ChattingUsername") === "" || localStorage.getItem("ChattingUsername") === "/") {
+            localStorage.removeItem("ChattingUsername");
+            window.open("/chats", "_self");
+        }
+        else {
+            console.log("myau");
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeKHHgEbPKu6XniHezuybQvNxAK-yj2WM",
+            authDomain: "ameychatterbox.firebaseapp.com",
+            databaseURL: "https://ameychatterbox-default-rtdb.firebaseio.com",
+            projectId: "ameychatterbox",
+            storageBucket: "ameychatterbox.appspot.com",
+            messagingSenderId: "680173019565",
+            appId: "1:680173019565:web:c09d2cb03e9193c7004124"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        var namedata;
+        var namo = firebase.database().ref('/user/' + localStorage.getItem('Username') + '/Name');
+
+        namo.on('value', (snapshot) => {
+            namedata = snapshot.val();
+            console.log(namedata);
+        });
+
+        document.getElementById("whoarechatting").innerHTML = "<div class='lopsym' onclick='window.history.back();'><i class='fa-solid fa-chevron-left' style='margin-left: 7.72px; margin-right: 7.72px;'></i></div>" + "<kgf style='font-size: 20px;font-weight: bold;margin-left: 5px;margin-right: 20px;'>" + localStorage.getItem("ChattingName") + "</kgf>";
+
+        firebase.database().ref("user/" + localStorage.getItem("Username") + "/Chats/" + localStorage.getItem("ChattingName")).on("child_added", function (snapshot) {
+            var color = "";
+            var tata = "";
+            if (snapshot.val().Sender === localStorage.getItem("ChattingName")) {
+                color = "rgba(43, 174, 102, 0.3)";
+            } 
+else { color = "rgba(43, 174, 102, 0.7);margin-left: calc(100% - 160px);border-bottom-left-radius: 15px;border-top-left-radius: 15px;border-top-right-radius: 15px;border-bottom-right-radius: 0;" }
+            var htmll = "";
+            htmll += "<li class='llooll' id='message-" + snapshot.key + "' style='background-color:" + color + "'><loki><div style='font-size: 15px;font-weight: bold;width: fit-content;'>" + snapshot.val().Sender + "</div></loki>";
+            htmll += "<center><div style='font-size: 20px;'>" + snapshot.val().Message + "</div></center><ul class='upperul'><li>" + snapshot.val().Date + "</li><li>" + snapshot.val().Time + "</li></ul>";
+            htmll += "</li><br>";
+            console.log(htmll);
+
+            document.getElementById("allmessages").innerHTML += htmll;
+        });
+        setTimeout(() => {
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 2000);
+        function getthetime() {
+            var today = new Date();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            return time;
+        }
+
+        function getthedate() {
+            var today = new Date();
+            var date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+            return date;
+        }
+
+        function sendthemessage() {
+            firebase.database().ref("/user/" + localStorage.getItem("Username") + "/Chats/" + localStorage.getItem("ChattingName")).push().set({
+                Message: document.getElementById("themessage").value,
+                Sender: namedata,
+                Date: getthedate(),
+                Time: getthetime()
+            });
+            firebase.database().ref("/user/" + localStorage.getItem("ChattingUsername") + "/Chats/" + namedata).push().set({
+                Message: document.getElementById("themessage").value,
+                Sender: namedata,
+                Date: getthedate(),
+                Time: getthetime()
+            });
+            window.scrollTo(0, document.body.scrollHeight);
+            document.getElementById("themessage").value = "";
+        }
+
+        function bottomFunction() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        let inputii = document.getElementById('themessage');
+
+        inputii.addEventListener('keyup', (e) => {
+            if (e.keyCode === 13) {
+                sendthemessage();
+            }
+        })
+
+        firebase.database().ref("user/" + localStorage.getItem("Username") + "/Files/").on("child_added", function (snapshot) {
+            var htmll = "";
+            htmll += "<li onclick='sendFile(`" + snapshot.val().URL + "`,`" + snapshot.val().Tag + "`)';><div style='font-size: 15px;font-weight: bold;'>" + snapshot.val().Name + "</div><button class='pushpa2'><i class='fa-solid fa-paper-plane' style='margin-right:2px;'></i>Send</button>";
+            htmll += "</li><hr>";
+            console.log(htmll);
+
+            document.getElementById("allfileso").innerHTML += htmll;
+        });
+
+        function sendFile(urll, tagg) {
+            var deviceWidth = window.innerWidth;
+            if (tagg === "i") {
+                document.getElementById("themessage").value = "<img src=" + urll + " frameborder='0' width='270px' style='border-radius: 5px;'>";
+                sendthemessage();
+            }
+            else if (tagg === "v") {
+                document.getElementById("themessage").value = "<video src=" + urll + " frameborder='0' width='270px' style='border-radius: 5px;' controls></video>";
+                sendthemessage();
+            }
+            else {
+                console.log("myau");
+            }
+            document.getElementById("allfiles").style.display = "none";
+        }
+
+        setInterval(() => {
+            if (navigator.onLine) {
+                document.getElementById("demo").style.display = "none";
+            } else {
+                document.getElementById("demo").style.display = "block";
+            }
+        }, 10);
+    </script>
+</body>
+
+</html>

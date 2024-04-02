@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBox | Login | Chatting Application | An Amey Product</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/Amey Chatter Box Logo New.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <center>
+        <!--<div id="aap">An <img src="/Amey Company Logo.png" alt="company_logo" width="100px" onclick="window.open('/Amey Company Logo.png','_self');">Product</div>-->
+        <h2><img src="/Amey Chatter Box Logo New.png" alt="logo" width="100px" onclick="document.getElementById('aap').innerHTML = 'Chatter Box is An Amey Product';"><br>ChatterBox</h2><kgf id="aap"></kgf>
+        <div id="loginform">
+            <div class="usernamebox">
+                <div class="lopsym"><i class="fa-solid fa-user"></i></div><input type="text" id="uname"
+                    placeholder="Username">
+            </div><br>
+            <div class="usernamebox">
+                <div class="lopsym"><i class="fa-solid fa-key"></i></div><input type="password" id="pass"
+                    placeholder="Password">
+            </div><br>
+            <div class="usernamebox" onclick="submitoo();" style="justify-content: space-between;cursor: default;" id="loginbtn">
+                <div class="lopsym"><i class="fa-solid fa-chevron-left"></i></div>
+                <p style="font-size: 15px;">Login</p>
+            </div>
+        </div>
+        
+        <div id="demo" style="display: none;">
+            <center>
+                <img src="/nonet.png" alt="No InterNet" width="320px">
+                <h1>You're Not Connected to Internet</h1>
+            </center>
+        </div>
+    </center><br>
+    <center>
+        <div id="message"></div>
+        <br>
+        <center>
+        <div class="usernameboxl" style="width: fit-content;cursor: default;">
+            <div class="lopsyml" style="background-color: #FCF6F5;color: #2BAE66;" onclick="window.open('/','_self');">Login</div>
+            <div class="lopsyml" style="background-color: #2BAE66;color: #FCF6F5;" onclick="window.open('/createacc','_self');">Create Account</div>
+        </div>
+    </center>
+    </center>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeKHHgEbPKu6XniHezuybQvNxAK-yj2WM",
+            authDomain: "ameychatterbox.firebaseapp.com",
+            databaseURL: "https://ameychatterbox-default-rtdb.firebaseio.com",
+            projectId: "ameychatterbox",
+            storageBucket: "ameychatterbox.appspot.com",
+            messagingSenderId: "680173019565",
+            appId: "1:680173019565:web:c09d2cb03e9193c7004124"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+
+        if (localStorage.getItem('Username') == null || localStorage.getItem('Password') == null) {
+            localStorage.clear();
+        } else {
+            var passdata;
+            var userdata;
+            var namedata;
+            var unameo = firebase.database().ref('user/' + localStorage.getItem('Username'));
+            var passo = firebase.database().ref('/user/' + localStorage.getItem('Username') + '/Password');
+            var namo = firebase.database().ref('/user/' + localStorage.getItem('Username') + '/Name');
+
+            namo.on('value', (snapshot) => {
+                namedata = snapshot.val();
+                console.log(namedata);
+            })
+            passo.on('value', (snapshot) => {
+                passdata = snapshot.val();
+                console.log(passdata);
+            })
+            unameo.on('value', (snapshot) => {
+                userdata = snapshot.val();
+                console.log(userdata);
+            });
+            if (unameo === null || unameo === undefined) {
+                console.log("myau");
+            } else {
+                window.open("/chats", "_self");
+            }
+        }
+
+        function submitoo() {
+            document.getElementById("message").innerHTML = "Loading... ";
+            var userdata, passdata;
+            if (document.getElementById("uname").value === "" || document.getElementById("uname").value === null || document.getElementById("uname").value === undefined) { document.getElementById("message").innerHTML = "Please fill username section"; } else {
+                var uname = firebase.database().ref('user/' + document.getElementById("uname").value);
+                var pass = firebase.database().ref('/user/' + document.getElementById("uname").value + '/Password');
+
+                pass.on('value', (snapshot) => {
+                    passdata = snapshot.val();
+                    console.log(passdata);
+                })
+                uname.on('value', (snapshot) => {
+                    userdata = snapshot.val();
+                    console.log(userdata);
+                });
+
+                var namo = firebase.database().ref('/user/' + localStorage.getItem('Username') + '/Name');
+
+                namo.on('value', (snapshot) => {
+                    namedata = snapshot.val();
+                    console.log(namedata);
+                });
+
+                console.log("password ", passdata);
+                console.log("user ", userdata);
+                console.log(document.getElementById("pass").value);
+                if (passdata == document.getElementById("pass").value) {
+                    localStorage.setItem("Username", document.getElementById("uname").value);
+                    localStorage.setItem("Password", document.getElementById("pass").value);
+                    localStorage.setItem("login", "yes");
+                    localStorage.setItem("MyName",namedata);
+                    window.open("/chats", "_self");
+                } else {
+                    document.getElementById("message").innerHTML = "Error: Username and password combination is wrong. (or) try clicking login again.";
+                }
+            }
+        }
+        setInterval(() => {
+            if (navigator.onLine) {
+                document.getElementById("demo").style.display = "none";
+            } else {
+                document.getElementById("demo").style.display = "block";
+            }
+        }, 10);
+    </script>
+</body>
+
+</html>

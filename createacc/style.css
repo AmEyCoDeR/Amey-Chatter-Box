@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
+*{
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+
+body{
+    background-color: #FCF6F5;
+}
+
+#loginform{
+    background-color: #2BAE66;
+    width: fit-content;
+    height: fit-content;
+    padding: 10px;
+    border-radius: 40px;
+}
+
+.usernamebox{
+    background-color: #FCF6F5;
+    border-radius: 60px;
+    align-items: center;
+    padding: 5px;
+    display: flex;
+}
+
+.usernamebox input{
+    background-color: transparent;
+    border: none;
+    height: 20px;
+    width: 200px;
+    margin-left: 15px;
+    font-size: 15px;
+}
+
+.lopsym{
+    background-color: #2BAE66;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    font-size: 18.5px;
+    transition: all 0.4s ease;
+}
+
+.lopsym i{
+    margin-top: calc(50% - 9px);
+}
+
+.lopsym:active{
+    transform: scale(0.75);
+}
+
+.lopsyml{
+    background-color: #FCF6F5;
+    border-radius: 50px;
+    font-size: 18.5px;
+    padding: 5px;
+    transition: all 0.4s ease;
+}
+
+.lopsyml i{
+    margin-top: calc(50% - 9px);
+}
+
+.lopsyml:active{
+    transform: scale(0.75);
+}
+
+.usernamebox p {
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 60px;
+    margin-bottom: 0;
+    font-size: 15px;
+}
+
+.usernameboxl{
+    background-color: #2BAE66;
+    border-radius: 60px;
+    align-items: center;
+    padding: 5px;
+    display: flex;
+}
+/*
+#aap{
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    align-items: center;
+}
+*/
+::selection{
+    background-color: #2BAE66;
+    color: #FCF6F5;
+}
+
+#demo{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100vw;
+    background-color: #FCF6F5;
+    z-index: 9999999999999999999999999999999999999999;
+}

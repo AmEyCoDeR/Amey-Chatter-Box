@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBox | Inbox | Chatting Application | An Amey Product</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/Amey Chatter Box Logo New.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <!--<div id="aap">An <img src="/Amey Company Logo.png" alt="company_logo" width="100px" onclick="window.open('/Amey Company Logo.png','_self');">Product</div>-->
+    <center>
+        <center>
+            <div class="usernamebox">
+                <input type="text" id="chattingfriendusername" placeholder="Friend Username"><div class="lopsym" onclick="searchforuser()"><i class="fa-solid fa-user-plus"></i></div>
+            </div>
+        </center>
+        <img src="/Amey Cloud/Amey Cloud.png" alt="logo" width="50px" id="ac" onclick="window.open('/Amey Cloud','_self');">
+        <div id="usermessage"></div>
+        <div id="nameofuser"></div>
+        <ul id="recentchats"></ul>
+    </center>
+
+    <div id="demo" style="display: none;">
+        <center>
+            <img src="/nonet.png" alt="No InterNet" width="320px">
+            <h1>You're Not Connected to Internet</h1>
+        </center>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-database.js"></script>
+    <script>
+        if (localStorage.getItem("login") === "yes") {
+            console.log("You have logged in!");
+        } else {
+            localStorage.clear();
+            window.open("/", "_self");
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeKHHgEbPKu6XniHezuybQvNxAK-yj2WM",
+            authDomain: "ameychatterbox.firebaseapp.com",
+            databaseURL: "https://ameychatterbox-default-rtdb.firebaseio.com",
+            projectId: "ameychatterbox",
+            storageBucket: "ameychatterbox.appspot.com",
+            messagingSenderId: "680173019565",
+            appId: "1:680173019565:web:c09d2cb03e9193c7004124"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        var namedata;
+        var namo = firebase.database().ref('/user/' + localStorage.getItem('Username') + '/Name');
+
+        namo.on('value', (snapshot) => {
+            namedata = snapshot.val();
+            console.log(namedata);
+        });
+
+        setTimeout(() => {
+            document.getElementById("nameofuser").innerHTML = "<div class='lopsym' style='margin-right: 5px;'><i class='fa-solid fa-user'></i></div><p> Hi, " + "<kgf style='font-size: 20px;font-weight: bold;'>" +namedata + "</kgf>" +"</p><div class='lopsym' onclick='window.location.reload();localStorage.clear();' style='margin-left: 5px;'><i class='fa-solid fa-arrow-right-from-bracket'></i></div>";
+        }, 2000);
+
+
+        firebase.database().ref("user/" + localStorage.getItem("Username") + "/UsersChatters").on("child_added", function (snapshot) {
+            var html = "";
+            html += "<li id='message-" + snapshot.key + "' data-id='" + snapshot.key + "' data-sender='" + snapshot.val().Name + "' data-senderusername='" + snapshot.val().Username + "' onclick='openchat(this);'><div style='font-size: 30px;font-weight: bold;'>" + snapshot.val().Name + "</div>";
+            html += "";
+
+            html += "</li>";
+            console.log(snapshot.val().Username);
+            document.getElementById("recentchats").innerHTML += html;
+        });
+
+        function deleteMessage(self) {
+            var messageId = self.getAttribute("data-id");
+
+            firebase.database().ref("left").child(messageId).remove();
+            window.location.reload();
+        }
+        var omg = 1;
+
+        function getthetime() {
+            var today = new Date();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            return time;
+        }
+
+        function getthedate() {
+            var today = new Date();
+            var date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+            return date;
+        }
+
+        function searchforuser() {
+            document.getElementById("usermessage").innerHTML = "Loading...";
+            var userdata;
+            var Userexistance = firebase.database().ref('/user/' + document.getElementById("chattingfriendusername").value + '/SignUp');
+
+            Userexistance.on('value', (snapshot) => {
+                userdata = snapshot.val();
+                console.log(userdata);
+            });
+
+
+            var chatterfriendname;
+            var friendlocatee = firebase.database().ref('/user/' + document.getElementById("chattingfriendusername").value + '/Name');
+            friendlocatee.on('value', (snapshot) => {
+                chatterfriendname = snapshot.val();
+                console.log(JSON.stringify(chatterfriendname));
+            });
+            var chattdata;
+            var chatexistance = firebase.database().ref("/user/" + document.getElementById("chattingfriendusername").value + "/Chats/" + namedata + "/messaging");
+
+            setTimeout(() => {
+                chatexistance.on("value", (snapshot) => {
+                    chattdata = snapshot.val();
+                    console.log(chattdata);
+                })
+            }, 2000);
+            setTimeout(() => {
+                if (userdata === true && !chattdata === true) {
+                    setTimeout(() => {
+                        document.getElementById("usermessage").innerHTML = "Starting chat with: " + chatterfriendname;
+                        var firebaseRef = firebase.database().ref("user/" + localStorage.getItem("Username") + "/Chats/" + chatterfriendname);
+
+                        firebaseRef.set({
+                            messaging: true
+                        });
+                        var firebaseRef2 = firebase.database().ref("user/" + localStorage.getItem("Username") + "/UsersChatters/");
+
+                        setTimeout(() => {
+                            firebaseRef2.push().set({
+                                Name: chatterfriendname,
+                                Username: document.getElementById("chattingfriendusername").value
+                            });
+                        }, 2000);
+                        var firebaseReff = firebase.database().ref("user/" + document.getElementById("chattingfriendusername").value + "/Chats/" + namedata);
+
+                        firebaseReff.set({
+                            messaging: true
+                        });
+                        var firebaseReff2 = firebase.database().ref("user/" + document.getElementById("chattingfriendusername").value + "/UsersChatters/");
+
+                        firebaseReff2.push().set({
+                            Name: namedata,
+                            Username: localStorage.getItem("Username")
+                        });
+                        console.clear();
+                    }, 2000);
+                } else {
+                    if (omg === 1) { document.getElementById("usermessage").innerHTML = "Click the Search User Button Again"; omg += 1; } else {
+                        document.getElementById("usermessage").innerHTML = "No User Exits with username: " + document.getElementById("chattingfriendusername").value;
+                    }
+
+                }
+            }, 2500);
+        }
+
+        function openchat(self) {
+            var SenderName = self.getAttribute("data-sender");
+            var SenderUserName = self.getAttribute("data-senderusername");
+            localStorage.setItem("ChattingUsername", SenderUserName);
+            localStorage.setItem("ChattingName", SenderName);
+            console.log(SenderName);
+            console.log(SenderUserName);
+            window.open("/chatting", "_self");
+        };
+
+        setInterval(() => {
+            if (navigator.onLine) {
+                document.getElementById("demo").style.display = "none";
+            } else {
+                document.getElementById("demo").style.display = "block";
+            }
+        }, 10);
+    </script>
+</body>
+
+</html>
